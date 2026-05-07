@@ -1008,7 +1008,8 @@ function renderKundenstatus() {
   const el = document.getElementById('view-kundenstatus');
 
   // Generate shareable link
-  const link = 'kundendisplay.html?id=' + uid;
+  const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+  const link = baseUrl + 'kundendisplay.html?id=' + uid;
 
   el.innerHTML = `
     <div class="card-header">
