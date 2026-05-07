@@ -346,6 +346,26 @@ let editingArticle = null;
 let newExtrasTemp = [];
 
 // ── INIT ──
+// Fallback: falls Firebase nicht lädt nach 8 Sekunden
+setTimeout(() => {
+  const loader = document.getElementById('loader');
+  if (loader && loader.style.display !== 'none') {
+    loader.innerHTML = `
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:18px;font-weight:700;color:#ff6b35;margin-bottom:12px">GastroOrder</div>
+        <div style="color:#e74c3c;margin-bottom:16px">⚠️ Verbindung fehlgeschlagen</div>
+        <div style="color:#888;font-size:13px;line-height:1.8;max-width:320px">
+          Firebase konnte nicht geladen werden.<br>
+          Bitte stelle sicher dass du mit dem Internet verbunden bist<br>
+          und öffne die Datei über einen lokalen Server.<br><br>
+          <strong style="color:#aaa">Tipp:</strong> VS Code → Live Server → Go Live
+        </div>
+        <button onclick="location.reload()" style="margin-top:20px;background:#ff6b35;color:white;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer">↻ Neu laden</button>
+      </div>
+    `;
+  }
+}, 8000);
+
 auth.onAuthStateChanged(async user => {
   document.getElementById('loader').style.display = 'none';
   if (user) {
@@ -435,6 +455,8 @@ async function resetPassword() {
     showAuthError(getAuthError(e.code));
   }
 }
+
+async function doRegister() {
   const name = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pw = document.getElementById('reg-password').value;
