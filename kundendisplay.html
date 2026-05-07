@@ -168,6 +168,33 @@ body{
 .error-box h2{color:#e74c3c;margin-bottom:12px}
 .error-box p{color:#888;font-size:14px;line-height:1.6}
 .error-box code{background:#0a0a0a;padding:4px 8px;border-radius:4px;font-family:'DM Mono',monospace;font-size:13px;color:#aaa}
+/* RESPONSIVE */
+@media(max-width:768px){
+  html,body{overflow:auto}
+  .header{padding:10px 16px}
+  .header-logo{font-size:16px}
+  .header-restaurant{font-size:13px}
+  .header-time{font-size:15px}
+  .content{padding:12px 16px;overflow:auto}
+  .columns{grid-template-columns:1fr;gap:12px}
+  .column-header-title{font-size:13px}
+  .order-card{padding:10px 14px}
+  .order-number{font-size:28px}
+  .footer{padding:8px 16px}
+  .footer-text{font-size:11px}
+  .no-orders-icon{font-size:48px}
+  .no-orders-text{font-size:18px}
+}
+
+@media(max-width:480px){
+  .header-restaurant{display:none}
+  .columns{grid-template-columns:1fr}
+  .column-header{padding:8px 12px}
+  .order-card{padding:8px 12px}
+  .order-number{font-size:32px}
+  .order-info{display:none}
+  .footer-text{display:none}
+}
 </style>
 </head>
 <body>
@@ -271,6 +298,7 @@ function renderCards() {
   const content = document.getElementById('content');
   if (!content) return;
 
+  const isMobile = window.innerWidth <= 480;
   const neu = orders.filter(o => o.status === 'Neu');
   const zubereitung = orders.filter(o => o.status === 'In Zubereitung');
   const fertig = orders.filter(o => o.status === 'Fertig');
@@ -285,6 +313,40 @@ function renderCards() {
     return;
   }
 
+  if (isMobile) {
+    // Mobile: alle Bestellungen in einer Liste, nur Nummer + Farbe
+    content.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${fertig.length>0?`
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--green);padding:4px 0">✅ Abholbereit (${fertig.length})</div>
+          ${fertig.map(o=>`
+            <div class="order-card fertig" style="justify-content:center">
+              <div class="order-number" style="font-size:42px">${o.orderNumber||'B-?'}</div>
+            </div>
+          `).join('')}
+        `:''}
+        ${zubereitung.length>0?`
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue);padding:4px 0;margin-top:8px">👨‍🍳 In Zubereitung (${zubereitung.length})</div>
+          ${zubereitung.map(o=>`
+            <div class="order-card zubereitung" style="justify-content:center">
+              <div class="order-number" style="font-size:42px">${o.orderNumber||'B-?'}</div>
+            </div>
+          `).join('')}
+        `:''}
+        ${neu.length>0?`
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--yellow);padding:4px 0;margin-top:8px">⏳ Wartet (${neu.length})</div>
+          ${neu.map(o=>`
+            <div class="order-card neu" style="justify-content:center">
+              <div class="order-number" style="font-size:42px">${o.orderNumber||'B-?'}</div>
+            </div>
+          `).join('')}
+        `:''}
+      </div>
+    `;
+    return;
+  }
+
+  // Desktop: 3 Spalten
   content.innerHTML = `
     <div class="columns">
       <div class="column">
@@ -337,6 +399,7 @@ function renderCard(o, cls) {
 }
 
 init();
+window.addEventListener('resize', () => { if(orders.length >= 0) renderCards(); });
 </script>
 </body>
 </html>
